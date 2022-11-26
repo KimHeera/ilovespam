@@ -5,44 +5,103 @@
 #include <istream>
 #include <list>
 #include <map>
+#include <regex>
 #include <set>
 #include <sstream>
+#include <cstring>
 #include <string>
 #include <vector>
 using namespace std;
 
+vector<string> split(string input, char delimiter)
+{
+    {
+        vector<string> string_vector;
+        stringstream ss(input);
+        string temp;
+
+        while (getline(ss, temp, delimiter))
+        {
+            string_vector.push_back(temp);
+        }
+
+        return string_vector;
+    }
+}
+
 int main(int argc, char *argv[])
 {
+    list<string> special = {"+", "\'", "~", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "-", "<", ">", "?", "/", ".", ",", "\n", " ", ":", ";", "", "-", "\"", "\'", "_", "{", "}", "[", "]", "|", "\"\"", "\"Subject:"};
     vector<string> csv_read_row;
     string str_buf;
-    ifstream file("./csv/train/dataset_ham_train100.csv");
+    string str_buf_1;
+    double cnt = 0;
+    vector<string> space;
+    vector<string> sp;
+    ifstream trainHam("./csv/train/dataset_ham_train100.csv");
+    ifstream trainSpam("./csv/train/dataset_spam_train100.csv");
 
-    // if (file.fail())
-    // {
-    //     return (cout << "fail :: " << endl) && 0;
-    // }
-
-    if (file.is_open())
+    if (trainHam.is_open())
     {
-        while (getline(file, str_buf, ','))
+        // cout << "train ham 열림 :: " << endl;
+
+        while (getline(trainHam, str_buf, '\n'))
         {
-            cout << "야호 " << str_buf << endl;
+            csv_read_row.push_back(str_buf); //제대로 들어감
+            // cout << csv_read_row.back() << endl;
         }
-        // vector<string> row = csv_read_row(file, ',');
+        // for (string s : sp)
+        //     {
+        //         cout << s << "||" << endl;
+        //     }
 
-        // if (!row[0].find("#"))
-        // {
-        //     continue;
-        // }
-        // else
-        // {
-        //     for (int i = 0, leng = row.size() - 2; i < leng; i++)
-        //         cout << row[i] << "\t";
-        // }
-        // for (string t : row)
-        //     cout << "word: " << t << endl;
+        for (int i = 0; i < csv_read_row.size(); i++)
+        {
+            vector<string> sp = split(csv_read_row[i], '\n'); //개행문자로 자르기
+            for (string a : sp)
+            {
+                space = split(a, ' ');
 
-        // cout << endsl;
+                for (int i = 0; i < space.size(); i++)
+                {
+                    cout << "di " << endl;
+                    for (string c : special)
+                    {
+                        int d = space[i].find(c);
+                        space[i].erase(space[i] + d);
+                    }
+                    cnt++;
+                    cout << space[i] << "||";
+                    // cout << space[i] << "  나와라" << endl;
+                }
+            }
+        }
     }
+    else
+    {
+        cout << "파일을 찾을 수 없습니다!" << endl;
+    }
+
+    cout << "/////////////////////////////////////" << endl;
+
+    trainHam.close();
+
+    if (trainSpam.is_open())
+    {
+        // cout << "train spam 열림 :: " << endl;
+        while (getline(trainSpam, str_buf_1, ','))
+        {
+            // cout << str_buf_1 << endl;
+        }
+
+        trainSpam.close();
+    }
+    else
+    {
+        cout << "파일을 찾을 수 없습니다!" << endl;
+    }
+
+    // cout << "단어 개수 : " << cnt << endl;
+
     return 0;
 }
