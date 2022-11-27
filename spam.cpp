@@ -31,13 +31,14 @@ vector<string> split(string input, char delimiter)
 
 int main(int argc, char *argv[])
 {
-    list<string> special = {"+", "\'", "~", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "-", "<", ">", "?", "/", ".", ",", "\n", " ", ":", ";", "", "-", "\"", "\'", "_", "{", "}", "[", "]", "|", "\"\"", "\"Subject:"};
+    list<string> special = {"+", "\'", "~", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "-", "<", ">", "?", "/", ".", ",", "\n", " ", ":", ";", "", "-", "\"", ".\"", "\'", "_", "{", "}", "[", "]", "|", "\"\"", "\"Subject:"};
     vector<string> csv_read_row;
     string str_buf;
     string str_buf_1;
     double cnt = 0;
-    vector<string> space;
     vector<string> sp;
+    vector<string> space;
+    vector<string> sp_special;
     ifstream trainHam("./csv/train/dataset_ham_train100.csv");
     ifstream trainSpam("./csv/train/dataset_spam_train100.csv");
 
@@ -45,7 +46,7 @@ int main(int argc, char *argv[])
     {
         // cout << "train ham 열림 :: " << endl;
 
-        while (getline(trainHam, str_buf, '\n'))
+        while (getline(trainHam, str_buf, ','))
         {
             csv_read_row.push_back(str_buf); //제대로 들어감
             // cout << csv_read_row.back() << endl;
@@ -62,20 +63,41 @@ int main(int argc, char *argv[])
             {
                 space = split(a, ' ');
 
-                for (int i = 0; i < space.size(); i++)
+                // for (int i = 0; i < space.size(); i++)
+                // {
+                //     cout << space[i] << "  나와라" << endl;
+                // }
+                for (string s : space)
                 {
-                    cout << "di " << endl;
-                    for (string c : special)
+                    if ((find(special.begin(), special.end(), s) == special.end()))
                     {
-                        int d = space[i].find(c);
-                        space[i].erase(space[i] + d);
+                        cout << s << "||" << endl;
+                        sp_special.push_back(s);
                     }
-                    cnt++;
-                    cout << space[i] << "||";
-                    // cout << space[i] << "  나와라" << endl;
+                    // if (s.find(l) != string::npos)
+                    // {
+                    //     sp_special = split(s, l.c_str());
+                    //     // sp_special.push_back(s);
+                    // }
+                    // else
+                    //     sp_special.push_back(s);
+                    // // cout << "di " << endl;
+                    // // for (string c : special)
+                    // // {
+                    // //     int d = space[i].find(c);
+                    // //     space[i].erase(space[i + d]);
+                    // // }
+                    // cnt++;
+                    // cout << space[i] << "||";
                 }
             }
         }
+        // for (int i = 0; i < sp_special.size(); i++)
+        // {
+        //     cout << sp_special[i] << " || " << endl;
+        // }
+
+        // for(string l : space)
     }
     else
     {
