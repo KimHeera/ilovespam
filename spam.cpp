@@ -48,30 +48,32 @@ int main(int argc, char *argv[])
 
         while (getline(trainHam, str_buf, ','))
         {
-            csv_read_row.push_back(str_buf); //제대로 들어감
-            // cout << csv_read_row.back() << endl;
-        }
-        // for (string s : sp)
-        //     {
-        //         cout << s << "||" << endl;
-        //     }
-
-        for (int i = 0; i < csv_read_row.size(); i++)
-        {
-            vector<string> sp = split(csv_read_row[i], '\n'); //개행문자로 자르기
-            for (string a : sp)
+            csv_read_row = split(str_buf, '\n');
+            for (string a : csv_read_row)
             {
-                space = split(a, ' ');
+                // cout << "a: " << a << " || " << endl;
+                vector<string> temp = split(a, ' ');
+                for (string t : temp)
+                {
+                    // cout << "t: " << t << " || " << endl;
+                    if (t[t.length()] == '\n')
+                    {
+                        // cout << "야호!!" << endl;
+                        // cout << t << " || " << endl;
+                    }
+                }
+
+                // space = split(a, ' ');
 
                 // for (int i = 0; i < space.size(); i++)
                 // {
-                //     cout << space[i] << "  나와라" << endl;
+                //     // cout << space[i] << "  나와라" << endl;
                 // }
                 for (string s : space)
                 {
                     if ((find(special.begin(), special.end(), s) == special.end()))
                     {
-                        cout << s << "||" << endl;
+                        // cout << s << "||" << endl;
                         sp_special.push_back(s);
                     }
                     // if (s.find(l) != string::npos)
@@ -92,6 +94,19 @@ int main(int argc, char *argv[])
                 }
             }
         }
+        // cout << csv_read_row.size() << "|" << endl;
+
+        // for (int i = 0; i < csv_read_row.size(); i++)
+        // {
+        //     cout << csv_read_row[i] << "|" << endl;
+        // }
+
+        // for (int i = 0; i < csv_read_row.size(); i++)
+        // {
+        //     // cout << "||" << endl;
+
+        //     // vector<string> sp = split(csv_read_row[i], '\n'); //개행문자로 자르기
+        // }
         // for (int i = 0; i < sp_special.size(); i++)
         // {
         //     cout << sp_special[i] << " || " << endl;
