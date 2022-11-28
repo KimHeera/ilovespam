@@ -11,109 +11,73 @@
 #include <cstring>
 #include <string>
 #include <vector>
+
 using namespace std;
 
-vector<string> split(string input, char delimiter)
-{
-    {
-        vector<string> string_vector;
-        stringstream ss(input);
-        string temp;
-
-        while (getline(ss, temp, delimiter))
-        {
-            string_vector.push_back(temp);
-        }
-
-        return string_vector;
-    }
-}
+vector<string> split(string input, char delimiter);
 
 int main(int argc, char *argv[])
 {
     list<string> special = {"+", "\'", "~", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "-", "<", ">", "?", "/", ".", ",", "\n", " ", ":", ";", "", "-", "\"", ".\"", "\'", "_", "{", "}", "[", "]", "|", "\"\"", "\"Subject:"};
     vector<string> csv_read_row;
-    string str_buf;
+    string csv_line;
     string str_buf_1;
-    double cnt = 0;
+    int max = 0;
+    bool check = false;
     vector<string> sp;
-    vector<string> space;
-    vector<string> sp_special;
+    set<string> words;
+    map<string, int> frequency_map;
     ifstream trainHam("./csv/train/dataset_ham_train100.csv");
     ifstream trainSpam("./csv/train/dataset_spam_train100.csv");
 
     if (trainHam.is_open())
     {
-        // cout << "train ham 열림 :: " << endl;
-
-        while (getline(trainHam, str_buf, ','))
+        while (getline(trainHam, csv_line, ','))
         {
-            csv_read_row = split(str_buf, '\n');
+            csv_read_row = split(csv_line, '\n');
             for (string a : csv_read_row)
             {
-                // cout << "a: " << a << " || " << endl;
-                vector<string> temp = split(a, ' ');
-                for (string t : temp)
-                {
-                    // cout << "t: " << t << " || " << endl;
-                    if (t[t.length()] == '\n')
-                    {
-                        // cout << "야호!!" << endl;
-                        // cout << t << " || " << endl;
-                    }
-                }
+                sp = split(a, ' ');
 
-                // space = split(a, ' ');
-
-                // for (int i = 0; i < space.size(); i++)
-                // {
-                //     // cout << space[i] << "  나와라" << endl;
-                // }
-                for (string s : space)
+                for (string t : sp)
                 {
-                    if ((find(special.begin(), special.end(), s) == special.end()))
+                    if (check)
                     {
-                        // cout << s << "||" << endl;
-                        sp_special.push_back(s);
+                        if ((find(special.begin(), special.end(), t) == special.end()))
+                        {
+                            words.insert(t);
+                        }
+                        check = false;
                     }
-                    // if (s.find(l) != string::npos)
-                    // {
-                    //     sp_special = split(s, l.c_str());
-                    //     // sp_special.push_back(s);
-                    // }
-                    // else
-                    //     sp_special.push_back(s);
-                    // // cout << "di " << endl;
-                    // // for (string c : special)
-                    // // {
-                    // //     int d = space[i].find(c);
-                    // //     space[i].erase(space[i + d]);
-                    // // }
-                    // cnt++;
-                    // cout << space[i] << "||";
-                }
-            }
+                    else
+                    {
+                        if (t == "ham")
+                        {
+                            check = true;
+                            for (string s : words)
+                            {
+                                frequency_map[s] = frequency_map[s] + 1;
+                                cout << "word: " << s << " || " << frequency_map[s] << endl;
+
+                                if (max < frequency_map[s])
+                                    max = frequency_map[s];
+                            }
+                            words.clear();
+                        }
+                        else
+                        {
+                            if ((find(special.begin(), special.end(), t) == special.end()))
+                            {
+                                words.insert(t);
+                            }
+                        }
+                    } // check가 false이면
+                }     //공백으로 나눈 문장 for문
+            }         // string 한 줄씩 읽는 for문
         }
-        // cout << csv_read_row.size() << "|" << endl;
+    } // getline while문
+      //파일 열렸으면
 
-        // for (int i = 0; i < csv_read_row.size(); i++)
-        // {
-        //     cout << csv_read_row[i] << "|" << endl;
-        // }
-
-        // for (int i = 0; i < csv_read_row.size(); i++)
-        // {
-        //     // cout << "||" << endl;
-
-        //     // vector<string> sp = split(csv_read_row[i], '\n'); //개행문자로 자르기
-        // }
-        // for (int i = 0; i < sp_special.size(); i++)
-        // {
-        //     cout << sp_special[i] << " || " << endl;
-        // }
-
-        // for(string l : space)
-    }
     else
     {
         cout << "파일을 찾을 수 없습니다!" << endl;
@@ -138,7 +102,25 @@ int main(int argc, char *argv[])
         cout << "파일을 찾을 수 없습니다!" << endl;
     }
 
-    // cout << "단어 개수 : " << cnt << endl;
+    // cnt = space.size();
+
+    cout << "최대 빈도수 : " << max << endl;
 
     return 0;
+}
+
+vector<string> split(string input, char delimiter)
+{
+    {
+        vector<string> string_vector;
+        stringstream ss(input);
+        string temp;
+
+        while (getline(ss, temp, delimiter))
+        {
+            string_vector.push_back(temp);
+        }
+
+        return string_vector;
+    }
 }
