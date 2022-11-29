@@ -21,14 +21,6 @@ int test20(string filepath, string k, map<string, int> train_ham, map<string, in
 
 int main(int argc, char *argv[])
 {
-    // list<string> special = {"+", "\'", "~", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "-", "<", ">", "?", "/", ".", ",", "\n", " ", ":", ";", "", "-", "\"", ".\"", "\'", "_", "{", "}", "[", "]", "|", "\"\""};
-    // vector<string> csv_read_row;
-    // string csv_line;
-    // string str_buf_1;
-    // int max = 0;
-    // bool check = false;
-    // vector<string> sp;
-    // set<string> words;
     map<string, int> frequency_ham;
     map<string, int> frequency_spam;
 
@@ -52,20 +44,7 @@ int main(int argc, char *argv[])
     int s = test20("./csv/test/dataset_spam_test20.csv", "spam", frequency_ham, frequency_spam);
 
     double result = ((double)(h + s) / 40.0) * 100;
-    cout << "result : " << result << endl;
-    // int re = result(p, q, 0.0);
-
-    // for (double l : p)
-    // {
-    //     cout << "p = " << l << endl;
-    // }
-
-    // for (double l : q)
-    // {
-    //     cout << "q = " << l << endl;
-    // }
-
-    // test20 함수를 불러서 다른 calculate 함수로 r 값을 넘김. calculate 함수에서 판단함.
+    cout << "Accuracy : " << result << endl;
 
     return 0;
 }
@@ -108,14 +87,6 @@ map<string, int> getWord(string filepath, string k)
 
             for (string t : sp)
             {
-                // for (int i = 0; i < t.size(); i++)
-                // {
-                //     if (t[i] == '\n')
-                //     {
-                //         t[i] = ' ';
-                //     }
-                // }
-
                 if (check)
                 {
                     if ((find(special.begin(), special.end(), t) == special.end()))
@@ -175,8 +146,10 @@ int test20(string filepath, string k, map<string, int> train_ham, map<string, in
     while (getline(trainHam, csv_line, ','))
     {
         csv_read_row = split(csv_line, '\n');
-        for (string a : csv_read_row)
+
+        for (string a : csv_read_row) //
         {
+
             sp = split(a, ' ');
 
             for (string t : sp)
@@ -191,7 +164,7 @@ int test20(string filepath, string k, map<string, int> train_ham, map<string, in
                 }
                 else
                 {
-                    if (t == k)
+                    if (a == k)
                     {
                         p = 1.0;
                         q = 1.0;
@@ -217,7 +190,7 @@ int test20(string filepath, string k, map<string, int> train_ham, map<string, in
                             {
                                 spam_cnt++;
                             }
-                            // cout << "r : " << r << endl;
+                            cout << "r : " << r << endl;
                         }
                         else
                         {
@@ -225,7 +198,7 @@ int test20(string filepath, string k, map<string, int> train_ham, map<string, in
                             {
                                 ham_cnt++;
                             }
-                            // cout << "r : " << r << endl;
+                            cout << "r : " << r << endl;
                         }
                         cnt++;
                         // cout << "r : " << r << endl;
@@ -249,27 +222,9 @@ int test20(string filepath, string k, map<string, int> train_ham, map<string, in
         cout << "spam : " << spam_cnt << endl;
         return spam_cnt;
     }
-
     else
     {
         cout << "ham : " << ham_cnt << endl;
         return ham_cnt;
     }
-
-    // return p_vector;
 }
-
-// int result(vector<double> p, vector<double> q, double threshold)
-// {
-//     // cout << temp << "" << endl;
-//     vector<double> r;
-//     for (int i = 0; i < 20; i++)
-//     {
-//         // cout << i + 1 << ": "
-//         //      << "p.at(i): " << p.at(i) << " q.at(i): " << q.at(i) << endl;
-//         double temp = p.at(i) / (p.at(i) + q.at(i));
-//         cout << temp << "" << endl;
-//     }
-
-//     return 0;
-// }
