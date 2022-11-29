@@ -15,96 +15,57 @@
 using namespace std;
 
 vector<string> split(string input, char delimiter);
+map<string, int> getWord(string filepath, string k);
+int test20(string filepath, string k, map<string, int> train_ham, map<string, int> train_spam);
+// int result(vector<double> p, vector<double> q, double threshold);
 
 int main(int argc, char *argv[])
 {
-    list<string> special = {"+", "\'", "~", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "-", "<", ">", "?", "/", ".", ",", "\n", " ", ":", ";", "", "-", "\"", ".\"", "\'", "_", "{", "}", "[", "]", "|", "\"\"", "\"Subject:"};
-    vector<string> csv_read_row;
-    string csv_line;
-    string str_buf_1;
-    int max = 0;
-    bool check = false;
-    vector<string> sp;
-    set<string> words;
-    map<string, int> frequency_map;
-    ifstream trainHam("./csv/train/dataset_ham_train100.csv");
-    ifstream trainSpam("./csv/train/dataset_spam_train100.csv");
+    // list<string> special = {"+", "\'", "~", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "-", "<", ">", "?", "/", ".", ",", "\n", " ", ":", ";", "", "-", "\"", ".\"", "\'", "_", "{", "}", "[", "]", "|", "\"\""};
+    // vector<string> csv_read_row;
+    // string csv_line;
+    // string str_buf_1;
+    // int max = 0;
+    // bool check = false;
+    // vector<string> sp;
+    // set<string> words;
+    map<string, int> frequency_ham;
+    map<string, int> frequency_spam;
 
-    if (trainHam.is_open())
+    frequency_ham = getWord("./csv/train/dataset_ham_train100.csv", "ham");
+
+    for (auto const &pair : frequency_ham)
     {
-        while (getline(trainHam, csv_line, ','))
-        {
-            csv_read_row = split(csv_line, '\n');
-            for (string a : csv_read_row)
-            {
-                sp = split(a, ' ');
-
-                for (string t : sp)
-                {
-                    if (check)
-                    {
-                        if ((find(special.begin(), special.end(), t) == special.end()))
-                        {
-                            words.insert(t);
-                        }
-                        check = false;
-                    }
-                    else
-                    {
-                        if (t == "ham")
-                        {
-                            check = true;
-                            for (string s : words)
-                            {
-                                frequency_map[s] = frequency_map[s] + 1;
-                                cout << "word: " << s << " || " << frequency_map[s] << endl;
-
-                                if (max < frequency_map[s])
-                                    max = frequency_map[s];
-                            }
-                            words.clear();
-                        }
-                        else
-                        {
-                            if ((find(special.begin(), special.end(), t) == special.end()))
-                            {
-                                words.insert(t);
-                            }
-                        }
-                    } // check가 false이면
-                }     //공백으로 나눈 문장 for문
-            }         // string 한 줄씩 읽는 for문
-        }
-    } // getline while문
-      //파일 열렸으면
-
-    else
-    {
-        cout << "파일을 찾을 수 없습니다!" << endl;
+        // cout << "{" << pair.first << ": " << pair.second << "}\n";
     }
 
-    cout << "/////////////////////////////////////" << endl;
+    cout << "/////////////////////////////////////////////////////" << endl;
 
-    trainHam.close();
+    frequency_spam = getWord("./csv/train/dataset_spam_train100.csv", "spam");
 
-    if (trainSpam.is_open())
+    for (auto const &pair : frequency_spam)
     {
-        // cout << "train spam 열림 :: " << endl;
-        while (getline(trainSpam, str_buf_1, ','))
-        {
-            // cout << str_buf_1 << endl;
-        }
-
-        trainSpam.close();
-    }
-    else
-    {
-        cout << "파일을 찾을 수 없습니다!" << endl;
+        // cout << "{" << pair.first << ": " << pair.second << "}\n";
     }
 
-    // cnt = space.size();
+    int h = test20("./csv/test/dataset_ham_test20.csv", "ham", frequency_ham, frequency_spam);
+    int s = test20("./csv/test/dataset_spam_test20.csv", "spam", frequency_ham, frequency_spam);
 
-    cout << "최대 빈도수 : " << max << endl;
+    double result = ((double)(h + s) / 40.0) * 100;
+    cout << "result : " << result << endl;
+    // int re = result(p, q, 0.0);
+
+    // for (double l : p)
+    // {
+    //     cout << "p = " << l << endl;
+    // }
+
+    // for (double l : q)
+    // {
+    //     cout << "q = " << l << endl;
+    // }
+
+    // test20 함수를 불러서 다른 calculate 함수로 r 값을 넘김. calculate 함수에서 판단함.
 
     return 0;
 }
@@ -124,3 +85,191 @@ vector<string> split(string input, char delimiter)
         return string_vector;
     }
 }
+
+map<string, int> getWord(string filepath, string k)
+{
+    list<string> special = {"+", "\'", "~", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "-", "<", ">", "?", "/", ".", ",", "\n", " ", ":", ";", "", "-", "\"", ".\"", "\'", "_", "{", "}", "[", "]", "|", "\"\"", "\"Subject:"};
+    vector<string> csv_read_row;
+    string csv_line;
+    int max = 1;
+    bool check = false;
+    vector<string> sp;
+    set<string> words;
+    map<string, int> frequency_map;
+
+    ifstream trainHam(filepath);
+
+    while (getline(trainHam, csv_line, ','))
+    {
+        csv_read_row = split(csv_line, '\n');
+        for (string a : csv_read_row)
+        {
+            sp = split(a, ' ');
+
+            for (string t : sp)
+            {
+                // for (int i = 0; i < t.size(); i++)
+                // {
+                //     if (t[i] == '\n')
+                //     {
+                //         t[i] = ' ';
+                //     }
+                // }
+
+                if (check)
+                {
+                    if ((find(special.begin(), special.end(), t) == special.end()))
+                    {
+                        words.insert(t);
+                    }
+                    check = false;
+                }
+                else
+                {
+                    if (t == k)
+                    {
+                        check = true;
+                        for (string s : words)
+                        {
+                            frequency_map[s] = frequency_map[s] + 1;
+                            // cout << "word: " << s << " || " << frequency_map[s] << endl;
+
+                            if (max < frequency_map[s])
+                                max = frequency_map[s];
+                        }
+                        words.clear();
+                    }
+                    else
+                    {
+                        if ((find(special.begin(), special.end(), t) == special.end()))
+                        {
+                            words.insert(t);
+                        }
+                    }
+                } // check가 false이면
+            }     //공백으로 나눈 문장 for문
+        }         // string 한 줄씩 읽는 for문
+    }
+    cout << "최대 빈도수 : " << max << endl;
+
+    return frequency_map;
+}
+
+int test20(string filepath, string k, map<string, int> train_ham, map<string, int> train_spam)
+{
+    list<string> special = {"+", "\'", "~", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "-", "<", ">", "?", "/", ".", ",", "\n", " ", ":", ";", "", "-", "\"", ".\"", "\'", "_", "{", "}", "[", "]", "|", "\"\"", "\"Subject:"};
+    vector<string> csv_read_row;
+    vector<double> p_vector;
+    string csv_line;
+    bool check = false;
+    vector<string> sp;
+    set<string> words;
+    double p = 1.0;
+    double q = 1.0;
+    int spam_cnt = 0;
+    int ham_cnt = 0;
+    int cnt = 0;
+
+    ifstream trainHam(filepath);
+
+    while (getline(trainHam, csv_line, ','))
+    {
+        csv_read_row = split(csv_line, '\n');
+        for (string a : csv_read_row)
+        {
+            sp = split(a, ' ');
+
+            for (string t : sp)
+            {
+                if (check)
+                {
+                    if ((find(special.begin(), special.end(), t) == special.end()))
+                    {
+                        words.insert(t);
+                    }
+                    check = false;
+                }
+                else
+                {
+                    if (t == k)
+                    {
+                        p = 1.0;
+                        q = 1.0;
+                        check = true;
+                        for (string s : words)
+                        {
+                            if (train_ham[s] != 0 && train_spam[s] != 0)
+                            {
+                                // cout << "s: " << s << " data[s]: " << data[s] << endl;
+                                p = p * ((double)train_spam[s] / 100.0);
+                                q = q * ((double)train_ham[s] / 100.0);
+                            }
+                        }
+                        cout << "카운트 : " << cnt << endl;
+                        cout << "q : " << q << endl;
+                        cout << "p : " << p << endl;
+
+                        double r = p / (p + q);
+
+                        if (k == "spam")
+                        {
+                            if (r > 0.6)
+                            {
+                                spam_cnt++;
+                            }
+                            // cout << "r : " << r << endl;
+                        }
+                        else
+                        {
+                            if (r < 0.6)
+                            {
+                                ham_cnt++;
+                            }
+                            // cout << "r : " << r << endl;
+                        }
+                        cnt++;
+                        // cout << "r : " << r << endl;
+
+                        words.clear();
+                    }
+                    else
+                    {
+                        if ((find(special.begin(), special.end(), t) == special.end()))
+                        {
+                            words.insert(t);
+                        }
+                    }
+                } // check가 false이면
+            }     //공백으로 나눈 문장 for문
+        }         // string 한 줄씩 읽는 for문
+    }
+
+    if (k == "spam")
+    {
+        cout << "spam : " << spam_cnt << endl;
+        return spam_cnt;
+    }
+
+    else
+    {
+        cout << "ham : " << ham_cnt << endl;
+        return ham_cnt;
+    }
+
+    // return p_vector;
+}
+
+// int result(vector<double> p, vector<double> q, double threshold)
+// {
+//     // cout << temp << "" << endl;
+//     vector<double> r;
+//     for (int i = 0; i < 20; i++)
+//     {
+//         // cout << i + 1 << ": "
+//         //      << "p.at(i): " << p.at(i) << " q.at(i): " << q.at(i) << endl;
+//         double temp = p.at(i) / (p.at(i) + q.at(i));
+//         cout << temp << "" << endl;
+//     }
+
+//     return 0;
+// }
