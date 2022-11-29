@@ -26,19 +26,9 @@ int main(int argc, char *argv[])
 
     frequency_ham = getWord("./csv/train/dataset_ham_train100.csv", "ham");
 
-    for (auto const &pair : frequency_ham)
-    {
-        // cout << "{" << pair.first << ": " << pair.second << "}\n";
-    }
-
     cout << "/////////////////////////////////////////////////////" << endl;
 
     frequency_spam = getWord("./csv/train/dataset_spam_train100.csv", "spam");
-
-    for (auto const &pair : frequency_spam)
-    {
-        // cout << "{" << pair.first << ": " << pair.second << "}\n";
-    }
 
     int h = test20("./csv/test/dataset_ham_test20.csv", "ham", frequency_ham, frequency_spam);
     int s = test20("./csv/test/dataset_spam_test20.csv", "spam", frequency_ham, frequency_spam);
