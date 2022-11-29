@@ -186,17 +186,27 @@ int test20(string filepath, string k, map<string, int> train_ham, map<string, in
 
                         if (k == "spam")
                         {
-                            if (r > 0.6)
+                            if (r > 0.95)
                             {
+                                cout << "this is spam" << endl;
                                 spam_cnt++;
+                            }
+                            else
+                            {
+                                cout << "this is ham" << endl;
                             }
                             cout << "r : " << r << endl;
                         }
                         else
                         {
-                            if (r < 0.6)
+                            if (r < 0.95)
                             {
+                                cout << "this is ham" << endl;
                                 ham_cnt++;
+                            }
+                            else
+                            {
+                                cout << "this is spam" << endl;
                             }
                             cout << "r : " << r << endl;
                         }
